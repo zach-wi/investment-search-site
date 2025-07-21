@@ -45,3 +45,17 @@ button {
 button:hover {
   background-color: #1d4ed8;
 }
+
+#results {
+  margin-top: 20px;
+  text-align: left;
+}
+
+#results ul {
+  list-style: disc inside;
+  padding: 0;
+}
+
+#results li {
+  margin: 6px 0;
+}

@@ -10,10 +10,12 @@
   <div class="container">
     <h1>Investment Search</h1>
     <p>Find companies, metrics, news, and more</p>
-    <form action="#" method="GET">
-      <input type="text" name="query" placeholder="Enter company name, metric, keyword..." required>
+    <form id="search-form">
+      <input type="text" id="search-input" placeholder="Enter company name, metric, keyword..." required>
       <button type="submit">Search</button>
     </form>
+    <div id="results"></div>
   </div>
+  <script src="script.js"></script>
 </body>
 </html>
