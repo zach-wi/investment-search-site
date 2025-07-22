@@ -1,57 +1,95 @@
-document.addEventListener("DOMContentLoaded", function() {
-  const form = document.getElementById('search-form');
-  const input = document.getElementById('search-input');
+document.getElementById('searchButton').addEventListener('click', function() {
+  const query = document.getElementById('searchInput').value.trim();
+  if (query === '') return alert('Please enter a search term.');
+
+  fetch(`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}`)
+    .then(response => response.json())
+    .then(data => displayResults(data))
+    .catch(error => console.error('Error fetching data:', error));
+});
+
+document.getElementById('toggleTheme').addEventListener('click', function() {
+  document.body.classList.toggle('dark-mode');
+});
+
+function displayResults(data) {
   const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = '';
 
-  form.addEventListener('submit', function(event) {
-    event.preventDefault(); // prevent actual form submission
-    const query = input.value.trim();
+  if (data.quotes && data.quotes.length > 0) {
+    data.quotes.forEach(item => {
+      const link = document.createElement('a');
+      link.className = 'result-item';
+      link.href = `https://finance.yahoo.com/quote/${item.symbol}`;
+      link.target = '_blank';
 
-    if(query) {
-      // Create dummy results
-      const dummyResults = [
-        `Result 1 for "${query}"`,
-        `Result 2 for "${query}"`,
-        `Result 3 for "${query}"`
-      ];
+      // Add logo if available
+      const img = document.createElement('img');
+      img.className = 'result-logo';
+      // Yahoo doesn’t give logos; use Clearbit logo API or fallback icon
+      img.src = `https://logo.clearbit.com/${item.exchange}.com`;
+      img.onerror = () => img.style.display = 'none';
 
-      // Show results
-      resultsDiv.innerHTML = '<h2>Search Results:</h2><ul>' +
-        dummyResults.map(result => `<li>${result}</li>`).join('') +
-        '</ul>';
-    }
-  });
-});document.addEventListener("DOMContentLoaded", function() {
-  const form = document.getElementById('search-form');
-  const input = document.getElementById('search-input');
-  const resultsDiv = document.getElementById('results');
+      const text = document.createElement('span');
+      text.textContent = `${item.shortname || item.longname || item.symbol} (${item.symbol})`;
 
-  form.addEventListener('submit', function(event) {
-    event.preventDefault();
-    const query = input.value.trim();
-    if(query) {
-      searchCompany(query);
-    }
-  });
+      link.appendChild(img);
+      link.appendChild(text);
 
-  async function searchCompany(query) {
-    const apiKey = 'NvsNCCfitzIgw6Yk5e9omZf4rGSeVrTO'; // replace with your actual key
-    const url = `https://financialmodelingprep.com/stable/search-symbol?query=${encodeURIComponent(query)}&apikey=${apiKey}`;
+      resultsDiv.appendChild(link);
+    });
+  } else {
+    resultsDiv.textContent = 'No results found.';
+  }
+}
 
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if(!data || data.length === 0) {
-        resultsDiv.innerHTML = `<p>No results found for "${query}".</p>`;
-      } else {
-        resultsDiv.innerHTML = '<h2>Search Results:</h2><ul>' +
-          data.map(item => `<li>${item.name} (${item.symbol}) - ${item.exchangeShortName}</li>`).join('') +
-          '</ul>';
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      resultsDiv.innerHTML = '<p>Error fetching data. Please try again later.</p>';
-    }
+document.getElementById('searchButton').addEventListener('click', search);
+document.getElementById('searchInput').addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    search();
   }
 });
+
+document.getElementById('toggleTheme').addEventListener('click', function() {
+  document.body.classList.toggle('dark-mode');
+});
+
+function search() {
+  const query = document.getElementById('searchInput').value.trim();
+  if (query === '') return alert('Please enter a search term.');
+
+  fetch(`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}`)
+    .then(response => response.json())
+    .then(data => displayResults(data))
+    .catch(error => console.error('Error fetching data:', error));
+}
+
+function displayResults(data) {
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = '';
+
+  if (data.quotes && data.quotes.length > 0) {
+    data.quotes.forEach(item => {
+      const link = document.createElement('a');
+      link.className = 'result-item';
+      link.href = `https://finance.yahoo.com/quote/${item.symbol}`;
+      link.target = '_blank';
+
+      // Add logo if available
+      const img = document.createElement('img');
+      img.className = 'result-logo';
+      img.src = `https://logo.clearbit.com/${item.exchange}.com`;
+      img.onerror = () => img.style.display = 'none';
+
+      const text = document.createElement('span');
+      text.textContent = `${item.shortname || item.longname || item.symbol} (${item.symbol})`;
+
+      link.appendChild(img);
+      link.appendChild(text);
+
+      resultsDiv.appendChild(link);
+    });
+  } else {
+    resultsDiv.textContent = 'No results found.';
+  }
+}
